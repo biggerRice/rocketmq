@@ -3,29 +3,28 @@
 [![GitHub release](https://img.shields.io/badge/release-download-orange.svg)](https://rocketmq.apache.org/dowloading/releases)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
-**[Apache RocketMQ](https://rocketmq.apache.org) is a distributed messaging and streaming platform with low latency, high performance and reliability, trillion-level capacity and flexible scalability.**
+**[Apache RocketMQ](https://rocketmq.apache.org) 是一个延迟低、高性能、灵活性高，高可用万亿级容量分布式消息流平台**
 
-It offers a variety of features:
+本版本为RocketMq4.3.2
+,它提供多种特色功能:
 
-* Pub/Sub messaging model
-* Scheduled message delivery
-* Message retroactivity by time or offset
-* Log hub for streaming
-* Big data integration
-* Reliable FIFO and strict ordered messaging in the same queue
-* Efficient pull&push consumption model
-* Million-level message accumulation capacity in a single queue
-* Multiple messaging protocols like JMS and OpenMessaging
-* Flexible distributed scale-out deployment architecture
-* Lightning-fast batch message exchange system
-* Various message filter mechanics such as SQL and Tag
-* Docker images for isolated testing and cloud isolated clusters
-* Feature-rich administrative dashboard for configuration, metrics and monitoring
+* 发布/订阅消息模型
+* 定时、延迟消息
+* 通过时间或偏移量 消息回溯
+* 日志收集
+* 大数据整合
+* 在同一队列中支持可靠的FIFO和严格有序的消息传递
+* 高校的拉取、推送消费模型
+* 支持多种消费协议，如JMS 、OpenMessaging
+* 支持分布式可扩展的部署架构
+* 轻量、快捷的批量消息传输
+* 多种消息过滤器，如tag
+* 丰富的后台管理，如配置、指标、监控等
 
 
 ----------
 
-## Learn it & Contact us
+## 文档链接
 * Mailing Lists: <https://rocketmq.apache.org/about/contact/>
 * Home: <https://rocketmq.apache.org>
 * Docs: <https://rocketmq.apache.org/docs/quick-start/>
@@ -38,12 +37,3 @@ It offers a variety of features:
 
 ## Apache RocketMQ Community
 * [RocketMQ Community Projects](https://github.com/apache/rocketmq-externals)
-
-----------
-
-## Contributing
-We always welcome new contributions, whether for trivial cleanups, big new features or other material rewards, more details see [here](http://rocketmq.apache.org/docs/how-to-contribute/) 
- 
-----------
-## License
-[Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html) Copyright (C) Apache Software Foundation
