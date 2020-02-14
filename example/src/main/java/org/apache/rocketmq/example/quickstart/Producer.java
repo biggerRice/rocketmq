@@ -46,6 +46,10 @@ public class Producer {
          */
 
         producer.setNamesrvAddr("127.0.0.1:9876");
+
+        // 设置消息延迟容错
+        producer.setSendLatencyFaultEnable(true);
+
         /*
          * Launch the instance.
          */
