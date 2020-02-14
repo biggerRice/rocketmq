@@ -45,11 +45,11 @@
 
 ----------
 
- 源码文章目录
+## 源码文章目录
  
- 1.GitHub 拉取RocketMq 源码并部署到IDEA
- 2.IDEA Debug启动NameServer
- 3.IDEA Debug启动Broker
+* 1.GitHub 拉取RocketMq 源码并部署到IDEA <>
+* 2.IDEA Debug启动NameServer <>
+* 3.IDEA Debug启动Broker <>
 
 
 
