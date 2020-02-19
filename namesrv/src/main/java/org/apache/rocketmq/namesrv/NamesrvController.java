@@ -39,11 +39,21 @@ import org.apache.rocketmq.remoting.netty.TlsSystemConfig;
 import org.apache.rocketmq.srvutil.FileWatchService;
 
 
+/**
+ * NameServer 核心组件类
+ * 接收broker 和 客户端请求
+ */
 public class NamesrvController {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.NAMESRV_LOGGER_NAME);
 
+    /**
+     * NameServer自身运行的一些配置参数
+     */
     private final NamesrvConfig namesrvConfig;
 
+    /**
+     * nettyServer 服务器参数
+     */
     private final NettyServerConfig nettyServerConfig;
 
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryImpl(

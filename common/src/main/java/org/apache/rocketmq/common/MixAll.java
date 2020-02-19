@@ -231,10 +231,21 @@ public class MixAll {
         return null;
     }
 
+    /**
+     * 打印对象的属性
+     * @param logger
+     * @param object
+     */
     public static void printObjectProperties(final InternalLogger logger, final Object object) {
         printObjectProperties(logger, object, false);
     }
 
+    /**
+     * 打印对象的属性
+     * @param logger
+     * @param object
+     * @param onlyImportantField 是否只打印重要对象
+     */
     public static void printObjectProperties(final InternalLogger logger, final Object object,
         final boolean onlyImportantField) {
         Field[] fields = object.getClass().getDeclaredFields();

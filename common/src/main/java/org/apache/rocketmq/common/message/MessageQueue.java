@@ -21,6 +21,9 @@ import java.io.Serializable;
 public class MessageQueue implements Comparable<MessageQueue>, Serializable {
     private static final long serialVersionUID = 6191200464116433425L;
     private String topic;
+    /**
+     * 当前队列对应的brokerName存储
+     */
     private String brokerName;
     private int queueId;
 

@@ -15,10 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# -z 字符串变量$ROCKETMQ_HOME长度大于0则返回true
 if [ -z "$ROCKETMQ_HOME" ] ; then
   ## resolve links - $0 may be a link to maven's home
   PRG="$0"
-
+  # 如果 FILE 存在且是一个符号链接则为真。
   # need this for relative symlinks
   while [ -h "$PRG" ] ; do
     ls=`ls -ld "$PRG"`
@@ -42,4 +43,6 @@ fi
 
 export ROCKETMQ_HOME
 
+# 调用runserver.sh脚本，参数为NamesrvStartup类路径 ，来启动NamesrvStartup类的 mian()进程
+# $@ 符号表示传给脚本的所有参数，这里代表org.apache.rocketmq.namesrv.NamesrvStartup ，因为只有这一个参数
 sh ${ROCKETMQ_HOME}/bin/runserver.sh org.apache.rocketmq.namesrv.NamesrvStartup $@

@@ -24,10 +24,17 @@ import org.apache.rocketmq.logging.InternalLogger;
 import org.apache.rocketmq.logging.InternalLoggerFactory;
 import org.apache.rocketmq.store.config.StorePathConfigHelper;
 
+/**
+ * 对${user.home}/store/consumequeue/orderPaySucess/${queueId}/ 目录操作的封装
+ */
 public class ConsumeQueue {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.STORE_LOGGER_NAME);
 
+    /**
+     * ConsumeQueue 存储消息的单位大小 byte
+     */
     public static final int CQ_STORE_UNIT_SIZE = 20;
+
     private static final InternalLogger LOG_ERROR = InternalLoggerFactory.getLogger(LoggerName.STORE_ERROR_LOGGER_NAME);
 
     private final DefaultMessageStore defaultMessageStore;

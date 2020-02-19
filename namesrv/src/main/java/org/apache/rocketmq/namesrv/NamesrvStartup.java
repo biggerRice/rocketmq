@@ -41,16 +41,34 @@ import org.apache.rocketmq.srvutil.ServerUtil;
 import org.apache.rocketmq.srvutil.ShutdownHookThread;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author lilongsheng
+ * NameServer 进行启动类
+ */
 public class NamesrvStartup {
 
+    /**
+     * 日志
+     */
     private static InternalLogger log;
+    /**
+     * 属性
+     */
     private static Properties properties = null;
+    /**
+     * 命令
+     */
     private static CommandLine commandLine = null;
 
     public static void main(String[] args) {
         main0(args);
     }
 
+    /**
+     * main 启动类
+     * @param args
+     * @return
+     */
     public static NamesrvController main0(String[] args) {
 
         try {
@@ -79,15 +97,32 @@ public class NamesrvStartup {
             return null;
         }
 
+        /**
+         * NameServer自身运行的一些配置参数
+         */
         final NamesrvConfig namesrvConfig = new NamesrvConfig();
+        /**
+         * nettyServer 服务器参数
+         * 设置监听端口为 9876
+         */
         final NettyServerConfig nettyServerConfig = new NettyServerConfig();
         nettyServerConfig.setListenPort(9876);
+
+        /**
+         * 意思是如果你用mqnamesrc脚本启动时候，带上了 "-c" 参数选项
+         * 那么也就是带上了一个配置文件的地址
+         * 这里获取到地址就可以读取配置文件里面的内存了
+         */
         if (commandLine.hasOption('c')) {
             String file = commandLine.getOptionValue('c');
             if (file != null) {
+                // 基于输入流从配置文件里面读取配置
+                // 然后存储到Properties对象中
                 InputStream in = new BufferedInputStream(new FileInputStream(file));
                 properties = new Properties();
                 properties.load(in);
+
+                // 基于工具，把读取到的配置放入两个核心配置类中
                 MixAll.properties2Object(properties, namesrvConfig);
                 MixAll.properties2Object(properties, nettyServerConfig);
 
@@ -98,20 +133,28 @@ public class NamesrvStartup {
             }
         }
 
+        /**
+         * 意思是说mqnamesrc脚本启动时候，带上了 "-p" 参数选项
+         * 也就是print 打印出来 ，所有NameServer配置信息
+         */
         if (commandLine.hasOption('p')) {
             InternalLogger console = InternalLoggerFactory.getLogger(LoggerName.NAMESRV_CONSOLE_NAME);
+            // 基于工具类，打印对象的属性信息
             MixAll.printObjectProperties(console, namesrvConfig);
             MixAll.printObjectProperties(console, nettyServerConfig);
             System.exit(0);
         }
 
+        //在mqnamesrv命令行中有的配置选项都读取出来，赋值给namesrvConfig配置类中
         MixAll.properties2Object(ServerUtil.commandLine2Properties(commandLine), namesrvConfig);
 
+        //rocket 主目录变量读取不到会报错提醒
         if (null == namesrvConfig.getRocketmqHome()) {
             System.out.printf("Please set the %s variable in your environment to match the location of the RocketMQ installation%n", MixAll.ROCKETMQ_HOME_ENV);
             System.exit(-2);
         }
 
+        // 关于logback日志框架的解析配置 （暂时略过）
         LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
         JoranConfigurator configurator = new JoranConfigurator();
         configurator.setContext(lc);
@@ -120,11 +163,13 @@ public class NamesrvStartup {
 
         log = InternalLoggerFactory.getLogger(LoggerName.NAMESRV_LOGGER_NAME);
 
+        // 打印配置信息
         MixAll.printObjectProperties(log, namesrvConfig);
         MixAll.printObjectProperties(log, nettyServerConfig);
 
         final NamesrvController controller = new NamesrvController(namesrvConfig, nettyServerConfig);
 
+        // 保存所有配置到当前变量
         // remember all configs to prevent discard
         controller.getConfiguration().registerConfig(properties);
 
