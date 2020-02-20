@@ -62,8 +62,14 @@ import org.apache.rocketmq.logging.InternalLogger;
 import org.apache.rocketmq.logging.InternalLoggerFactory;
 import org.apache.rocketmq.remoting.protocol.RemotingCommand;
 
+/**
+ * rocket mq自己封装的网络服务器
+ */
 public class NettyRemotingServer extends NettyRemotingAbstract implements RemotingServer {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(RemotingHelper.ROCKETMQ_REMOTING);
+    /**
+     *  netty自己的网络服务器类，可以监听一个端口上的网络请求
+     */
     private final ServerBootstrap serverBootstrap;
     private final EventLoopGroup eventLoopGroupSelector;
     private final EventLoopGroup eventLoopGroupBoss;
@@ -89,7 +95,9 @@ public class NettyRemotingServer extends NettyRemotingAbstract implements Remoti
 
     public NettyRemotingServer(final NettyServerConfig nettyServerConfig,
         final ChannelEventListener channelEventListener) {
+        // 网络服务器参数
         super(nettyServerConfig.getServerOnewaySemaphoreValue(), nettyServerConfig.getServerAsyncSemaphoreValue());
+        // netty自己的网络服务器，可以监听一个端口上的网络请求
         this.serverBootstrap = new ServerBootstrap();
         this.nettyServerConfig = nettyServerConfig;
         this.channelEventListener = channelEventListener;
@@ -178,7 +186,10 @@ public class NettyRemotingServer extends NettyRemotingAbstract implements Remoti
                 }
             });
 
+        // 基于netty的api去配置和启动一个netty服务器
         ServerBootstrap childHandler =
+                //基于ServerBootstrap的group方法
+                //对netty服务器进行各种网络配置
             this.serverBootstrap.group(this.eventLoopGroupBoss, this.eventLoopGroupSelector)
                 .channel(useEpoll() ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG, 1024)
@@ -187,20 +198,29 @@ public class NettyRemotingServer extends NettyRemotingAbstract implements Remoti
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .childOption(ChannelOption.SO_SNDBUF, nettyServerConfig.getServerSocketSndBufSize())
                 .childOption(ChannelOption.SO_RCVBUF, nettyServerConfig.getServerSocketRcvBufSize())
+                // 设置了Netty服务器要监听的端口号，默认就是9876
                 .localAddress(new InetSocketAddress(this.nettyServerConfig.getListenPort()))
+
+                // 设置一堆网络请求处理器
+                // 只要netty服务器接收一个网络请求，那么就会依次用下面的处理器处理
+                // 比如说HandshakeHandler 可能是来处理连接握手
+
+                // NettyEncoder、NettyDecoder是用来编码 解码的；IdleStateHandler是负责连接空闲管理的
+                // NettyConnectManageHandler是负责网络连接管理的
+                // NettyServerHandler是负责网络请求的处理的
                 .childHandler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    public void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline()
-                            .addLast(defaultEventExecutorGroup, HANDSHAKE_HANDLER_NAME,
-                                new HandshakeHandler(TlsSystemConfig.tlsMode))
-                            .addLast(defaultEventExecutorGroup,
-                                new NettyEncoder(),
-                                new NettyDecoder(),
-                                new IdleStateHandler(0, 0, nettyServerConfig.getServerChannelMaxIdleTimeSeconds()),
-                                new NettyConnectManageHandler(),
-                                new NettyServerHandler()
-                            );
+                @Override
+                public void initChannel(SocketChannel ch) throws Exception {
+                    ch.pipeline()
+                        .addLast(defaultEventExecutorGroup, HANDSHAKE_HANDLER_NAME,
+                            new HandshakeHandler(TlsSystemConfig.tlsMode))
+                        .addLast(defaultEventExecutorGroup,
+                            new NettyEncoder(),
+                            new NettyDecoder(),
+                            new IdleStateHandler(0, 0, nettyServerConfig.getServerChannelMaxIdleTimeSeconds()),
+                            new NettyConnectManageHandler(),
+                            new NettyServerHandler()
+                        );
                     }
                 });
 
@@ -209,6 +229,8 @@ public class NettyRemotingServer extends NettyRemotingAbstract implements Remoti
         }
 
         try {
+            // 启动netty服务器
+            // 绑定并监听端口
             ChannelFuture sync = this.serverBootstrap.bind().sync();
             InetSocketAddress addr = (InetSocketAddress) sync.channel().localAddress();
             this.port = addr.getPort();

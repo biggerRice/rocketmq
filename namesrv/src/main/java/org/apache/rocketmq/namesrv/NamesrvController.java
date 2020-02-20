@@ -42,6 +42,7 @@ import org.apache.rocketmq.srvutil.FileWatchService;
 /**
  * NameServer 核心组件类
  * 接收broker 和 客户端请求
+ *
  */
 public class NamesrvController {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.NAMESRV_LOGGER_NAME);
@@ -52,7 +53,7 @@ public class NamesrvController {
     private final NamesrvConfig namesrvConfig;
 
     /**
-     * nettyServer 服务器参数
+     * nettyServer 服务器配置参数
      */
     private final NettyServerConfig nettyServerConfig;
 
@@ -61,6 +62,9 @@ public class NamesrvController {
     private final KVConfigManager kvConfigManager;
     private final RouteInfoManager routeInfoManager;
 
+    /**
+     * 网络服务器组件，负责接收broker注册和客户端请求
+     */
     private RemotingServer remotingServer;
 
     private BrokerHousekeepingService brokerHousekeepingService;
@@ -70,6 +74,11 @@ public class NamesrvController {
     private Configuration configuration;
     private FileWatchService fileWatchService;
 
+    /**
+     * 构造函数 主要根据两个核心配置类初始化其它变量值
+     * @param namesrvConfig
+     * @param nettyServerConfig
+     */
     public NamesrvController(NamesrvConfig namesrvConfig, NettyServerConfig nettyServerConfig) {
         this.namesrvConfig = namesrvConfig;
         this.nettyServerConfig = nettyServerConfig;
@@ -85,15 +94,18 @@ public class NamesrvController {
 
     public boolean initialize() {
 
+        // KVConfigManager组件来管理kvConfig配置信息
         this.kvConfigManager.load();
-
+        // 初始化网络服务器组件
         this.remotingServer = new NettyRemotingServer(this.nettyServerConfig, this.brokerHousekeepingService);
-
+        // 初始化NettyServer服务器的 工作线程池，默认线程数量8
         this.remotingExecutor =
             Executors.newFixedThreadPool(nettyServerConfig.getServerWorkerThreads(), new ThreadFactoryImpl("RemotingExecutorThread_"));
-
+        // 注册网络请求处理器，remotingServer组件接收到网络请求时，让处理器去处理
+        // 把工作线程池给了netty服务器
         this.registerProcessor();
-
+        // 启动一个后台线程，执行定时任务
+        // 每隔10s扫描一次broker心跳 验证是否都还活着
         this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
 
             @Override
@@ -102,6 +114,7 @@ public class NamesrvController {
             }
         }, 5, 10, TimeUnit.SECONDS);
 
+        // 每隔10分钟打印输出一次kvConfig.json配置信息
         this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
 
             @Override
@@ -110,6 +123,7 @@ public class NamesrvController {
             }
         }, 1, 10, TimeUnit.MINUTES);
 
+        //TODO:没看懂这在干啥？监听变化的配置文件？先略过吧
         if (TlsSystemConfig.tlsMode != TlsMode.DISABLED) {
             // Register a listener to reload SslContext
             try {

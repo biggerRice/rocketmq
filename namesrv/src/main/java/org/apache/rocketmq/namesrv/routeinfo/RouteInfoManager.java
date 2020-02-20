@@ -415,6 +415,9 @@ public class RouteInfoManager {
         return null;
     }
 
+    /**
+     * 扫描未激活的Broker,超时自动从激活列表移除
+     */
     public void scanNotActiveBroker() {
         Iterator<Entry<String, BrokerLiveInfo>> it = this.brokerLiveTable.entrySet().iterator();
         while (it.hasNext()) {
